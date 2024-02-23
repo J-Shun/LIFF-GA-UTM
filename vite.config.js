@@ -4,7 +4,8 @@ import fs from 'fs';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/LIFF-GA-UTM/',
+  // eslint-disable-next-line no-undef
+  base: process.env.NODE_ENV === 'production' ? '/LIFF-GA-UTM/' : '/',
   server: {
     https: {
       key: fs.readFileSync('./.cert/key.pem'),
