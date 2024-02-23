@@ -24,14 +24,22 @@ function App() {
         const queryString = parseQueryString(search);
         const { utm_source, utm_medium, utm_campaign, utm_term, utm_content } =
           queryString;
-        const utm = {
-          utm_source: utm_source ?? '',
-          utm_medium: utm_medium ?? '',
-          utm_campaign: utm_campaign ?? '',
-          utm_term: utm_term ?? '',
-          utm_content: utm_content ?? '',
-        };
-        setSessionStorage('utm', JSON.stringify(utm));
+        if (
+          utm_source ||
+          utm_medium ||
+          utm_campaign ||
+          utm_term ||
+          utm_content
+        ) {
+          const utm = {
+            utm_source: utm_source ?? '',
+            utm_medium: utm_medium ?? '',
+            utm_campaign: utm_campaign ?? '',
+            utm_term: utm_term ?? '',
+            utm_content: utm_content ?? '',
+          };
+          setSessionStorage('utm', JSON.stringify(utm));
+        }
 
         // 若無登入，則跳制登入頁面
         if (!liff.isLoggedIn()) {
