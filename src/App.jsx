@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import liff from '@line/liff';
 import { sendDataToGtm } from './helper';
 import config from './constant/config';
@@ -7,8 +7,6 @@ import viteLogo from '/vite.svg';
 import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0);
-
   useEffect(() => {
     const initLiff = async () => {
       try {
@@ -19,8 +17,6 @@ function App() {
           liff.login();
           return;
         }
-
-        console.log('is Login', liff.isLoggedIn());
 
         const profile = await liff.getProfile();
         const lineUid = profile.userId;
@@ -50,18 +46,7 @@ function App() {
           <img src={reactLogo} className='logo react' alt='React logo' />
         </a>
       </div>
-      <h1>Vite + React</h1>
-      <div className='card'>
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className='read-the-docs'>
-        Click on the Vite and React logos to learn more
-      </p>
+      <h1>GA & UTM</h1>
     </>
   );
 }
