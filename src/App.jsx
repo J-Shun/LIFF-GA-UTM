@@ -68,11 +68,11 @@ function App() {
         </a>
       </div>
       <h1>GA & UTM</h1>
-      <div>{utm.utm_source}</div>
-      <div>{utm.utm_medium}</div>
-      <div>{utm.utm_campaign}</div>
-      <div>{utm.utm_term}</div>
-      <div>{utm.utm_content}</div>
+      <div>{utm?.utm_source}</div>
+      <div>{utm?.utm_medium}</div>
+      <div>{utm?.utm_campaign}</div>
+      <div>{utm?.utm_term}</div>
+      <div>{utm?.utm_content}</div>
     </>
   );
 }
