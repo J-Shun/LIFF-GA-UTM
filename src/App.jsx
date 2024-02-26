@@ -15,7 +15,7 @@ function App() {
   useEffect(() => {
     const initLiff = async () => {
       try {
-        await liff.init({ liffId: '2003704225-2ApWgyz8' });
+        await liff.init({ liffId: config.LIFF_ID });
 
         saveUtm();
 
