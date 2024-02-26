@@ -1,45 +1,23 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import liff from '@line/liff';
 import {
   sendDataToGtm,
-  parseQueryString,
-  setSessionStorage,
   getSessionStorage,
+  saveUtm,
+  sendUtmToGtm,
 } from './helper';
 import config from './constant/config';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
 import './App.css';
 
 function App() {
-  const utmString = getSessionStorage('utm');
-  const utm = JSON.parse(utmString);
+  const [utm, setUtm] = useState({});
 
   useEffect(() => {
     const initLiff = async () => {
       try {
         await liff.init({ liffId: '2003704225-2ApWgyz8' });
 
-        const { search } = window.location;
-        const queryString = parseQueryString(search);
-        const { utm_source, utm_medium, utm_campaign, utm_term, utm_content } =
-          queryString;
-        if (
-          utm_source ||
-          utm_medium ||
-          utm_campaign ||
-          utm_term ||
-          utm_content
-        ) {
-          const utm = {
-            utm_source: utm_source ?? '',
-            utm_medium: utm_medium ?? '',
-            utm_campaign: utm_campaign ?? '',
-            utm_term: utm_term ?? '',
-            utm_content: utm_content ?? '',
-          };
-          setSessionStorage('utm', JSON.stringify(utm));
-        }
+        saveUtm();
 
         // 若無登入，則跳制登入頁面
         if (!liff.isLoggedIn()) {
@@ -57,6 +35,10 @@ function App() {
           key: 'gaTrackingId',
           value: config.GA4_TRACKING_ID,
         });
+        sendUtmToGtm();
+        const utmString = getSessionStorage('utm');
+        const parsedUtm = JSON.parse(utmString);
+        setUtm(parsedUtm);
       } catch (error) {
         alert('error');
         console.log(error);
@@ -67,20 +49,13 @@ function App() {
 
   return (
     <>
-      <div>
-        <a href='https://vitejs.dev' target='_blank'>
-          <img src={viteLogo} className='logo' alt='Vite logo' />
-        </a>
-        <a href='https://react.dev' target='_blank'>
-          <img src={reactLogo} className='logo react' alt='React logo' />
-        </a>
-      </div>
       <h1>GA & UTM</h1>
-      <div>{utm?.utm_source}</div>
-      <div>{utm?.utm_medium}</div>
-      <div>{utm?.utm_campaign}</div>
-      <div>{utm?.utm_term}</div>
-      <div>{utm?.utm_content}</div>
+      <div>utm_source: {utm?.utm_source}</div>
+      <div>utm_medium: {utm?.utm_medium}</div>
+      <div>utm_campaign: {utm?.utm_campaign}</div>
+      <div>utm_term: {utm?.utm_term}</div>
+      <div>utm_content: {utm?.utm_content}</div>
+      <button data-ga-id='button-test'>GA Test Event</button>
     </>
   );
 }

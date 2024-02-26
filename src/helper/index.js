@@ -49,6 +49,54 @@ function parseQueryString(queryString) {
   return obj;
 }
 
+const saveUtm = () => {
+  const { search } = window.location;
+  const queryString = parseQueryString(search);
+  const { utm_source, utm_medium, utm_campaign, utm_term, utm_content } =
+    queryString;
+  if (utm_source || utm_medium || utm_campaign || utm_term || utm_content) {
+    const utm = {
+      utm_source: utm_source ?? '',
+      utm_medium: utm_medium ?? '',
+      utm_campaign: utm_campaign ?? '',
+      utm_term: utm_term ?? '',
+      utm_content: utm_content ?? '',
+    };
+    setSessionStorage('utm', JSON.stringify(utm));
+  }
+};
+
+const sendUtmToGtm = () => {
+  const utmString = getSessionStorage('utm');
+  const utm = JSON.parse(utmString);
+  const { utm_source, utm_medium, utm_campaign, utm_term, utm_content } = utm;
+  sendDataToGtm({
+    event: 'setUtmSource',
+    key: 'utmSource',
+    value: utm_source ?? '',
+  });
+  sendDataToGtm({
+    event: 'setUtmMedium',
+    key: 'utmMedium',
+    value: utm_medium ?? '',
+  });
+  sendDataToGtm({
+    event: 'setUtmCampaign',
+    key: 'utmCampaign',
+    value: utm_campaign ?? '',
+  });
+  sendDataToGtm({
+    event: 'setUtmTerm',
+    key: 'utmTerm',
+    value: utm_term ?? '',
+  });
+  sendDataToGtm({
+    event: 'setUtmContent',
+    key: 'utmContent',
+    value: utm_content ?? '',
+  });
+};
+
 export {
   getLocalStorage,
   setLocalStorage,
@@ -60,4 +108,6 @@ export {
   clearAllSessionStorage,
   sendDataToGtm,
   parseQueryString,
+  saveUtm,
+  sendUtmToGtm,
 };
