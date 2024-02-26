@@ -69,7 +69,8 @@ const saveUtm = () => {
 const sendUtmToGtm = () => {
   const utmString = getSessionStorage('utm');
   const utm = JSON.parse(utmString);
-  const { utm_source, utm_medium, utm_campaign, utm_term, utm_content } = utm;
+  const { utm_source, utm_medium, utm_campaign, utm_term, utm_content } =
+    utm || {};
   sendDataToGtm({
     event: 'setUtmSource',
     key: 'utmSource',
