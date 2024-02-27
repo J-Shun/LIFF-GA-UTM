@@ -52,15 +52,35 @@ function parseQueryString(queryString) {
 const saveUtm = () => {
   const { search } = window.location;
   const queryString = parseQueryString(search);
-  const { utm_source, utm_medium, utm_campaign, utm_term, utm_content } =
-    queryString;
-  if (utm_source || utm_medium || utm_campaign || utm_term || utm_content) {
+  const {
+    utm_source,
+    utm_medium,
+    utm_campaign,
+    utm_term,
+    utm_content,
+    third_party,
+    third_party_id,
+    device_id,
+  } = queryString;
+  if (
+    utm_source ||
+    utm_medium ||
+    utm_campaign ||
+    utm_term ||
+    utm_content ||
+    third_party ||
+    third_party_id ||
+    device_id
+  ) {
     const utm = {
       utm_source: utm_source ?? '',
       utm_medium: utm_medium ?? '',
       utm_campaign: utm_campaign ?? '',
       utm_term: utm_term ?? '',
       utm_content: utm_content ?? '',
+      third_party: third_party ?? '',
+      third_party_id: third_party_id ?? '',
+      device_id: device_id ?? '',
     };
     setSessionStorage('utm', JSON.stringify(utm));
   }
@@ -69,8 +89,16 @@ const saveUtm = () => {
 const sendUtmToGtm = () => {
   const utmString = getSessionStorage('utm');
   const utm = JSON.parse(utmString);
-  const { utm_source, utm_medium, utm_campaign, utm_term, utm_content } =
-    utm || {};
+  const {
+    utm_source,
+    utm_medium,
+    utm_campaign,
+    utm_term,
+    utm_content,
+    third_party,
+    third_party_id,
+    device_id,
+  } = utm || {};
   sendDataToGtm({
     event: 'setUtmSource',
     key: 'utmSource',
@@ -95,6 +123,21 @@ const sendUtmToGtm = () => {
     event: 'setUtmContent',
     key: 'utmContent',
     value: utm_content ?? '',
+  });
+  sendDataToGtm({
+    event: 'setThirdParty',
+    key: 'thirdParty',
+    value: third_party ?? '',
+  });
+  sendDataToGtm({
+    event: 'setThirdPartyId',
+    key: 'thirdPartyId',
+    value: third_party_id ?? '',
+  });
+  sendDataToGtm({
+    event: 'setDeviceId',
+    key: 'deviceId',
+    value: device_id ?? '',
   });
 };
 

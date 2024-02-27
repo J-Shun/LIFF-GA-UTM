@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from 'react';
 import liff from '@line/liff';
 import {
@@ -8,6 +9,29 @@ import {
 } from './helper';
 import config from './constant/config';
 import './App.css';
+
+const link = [
+  {
+    text: '前往 Migo 官網 ( _blank )',
+    type: '_blank',
+  },
+  {
+    text: '前往 Migo 官網 ( _self )',
+    type: '_self',
+  },
+  {
+    text: '前往 Migo 官網 ( _parent )',
+    type: '_parent',
+  },
+  {
+    text: '前往 Migo 官網 ( _top )',
+    type: '_top',
+  },
+  {
+    text: '前往 Migo 官網 ( framename )',
+    type: 'framename',
+  },
+];
 
 function App() {
   const [utm, setUtm] = useState({});
@@ -48,15 +72,35 @@ function App() {
   }, []);
 
   return (
-    <>
-      <h1>GA & UTM</h1>
-      <div>utm_source: {utm?.utm_source}</div>
-      <div>utm_medium: {utm?.utm_medium}</div>
-      <div>utm_campaign: {utm?.utm_campaign}</div>
-      <div>utm_term: {utm?.utm_term}</div>
-      <div>utm_content: {utm?.utm_content}</div>
-      <button data-ga-id='button-test'>GA Test Event</button>
-    </>
+    <section className='section'>
+      <h1 className='title'>GA & UTM</h1>
+
+      <ul className='utm-list'>
+        <li>utm_source: {utm?.utm_source}</li>
+        <li>utm_medium: {utm?.utm_medium}</li>
+        <li>utm_campaign: {utm?.utm_campaign}</li>
+        <li>utm_term: {utm?.utm_term}</li>
+        <li>utm_content: {utm?.utm_content}</li>
+        <li>third_party: {utm?.third_party}</li>
+        <li>third_party_id: {utm?.third_party_id}</li>
+        <li>device_id: {utm?.device_id}</li>
+      </ul>
+
+      <button className='btn btn-test' data-ga-id='button-test'>
+        GA Event Test
+      </button>
+
+      {link.map((item) => (
+        <a
+          href='https://www.migocorp.com/'
+          className='link'
+          target={item.type}
+          key={item.type}
+        >
+          {item.text}
+        </a>
+      ))}
+    </section>
   );
 }
 
