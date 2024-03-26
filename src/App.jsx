@@ -12,24 +12,8 @@ import './App.css';
 
 const link = [
   {
-    text: '前往 Migo 官網 ( _blank )',
+    text: '前往 Migo 官網',
     type: '_blank',
-  },
-  {
-    text: '前往 Migo 官網 ( _self )',
-    type: '_self',
-  },
-  {
-    text: '前往 Migo 官網 ( _parent )',
-    type: '_parent',
-  },
-  {
-    text: '前往 Migo 官網 ( _top )',
-    type: '_top',
-  },
-  {
-    text: '前往 Migo 官網 ( framename )',
-    type: 'framename',
   },
 ];
 
