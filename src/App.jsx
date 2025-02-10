@@ -1,17 +1,29 @@
 /* eslint-disable no-unused-vars */
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import liff from '@line/liff';
 import config from './constant/config';
 import './App.css';
+import BarcodeScannerComponent from 'react-qr-barcode-scanner';
+
+const btnStyle = {
+  padding: '10px 20px',
+  fontSize: '16px',
+  backgroundColor: 'rgb(0, 150, 136)',
+  color: 'white',
+  border: 'none',
+  borderRadius: '5px',
+  cursor: 'pointer',
+};
 
 function App() {
-  const handleScan = () => {
+  const [isShowBarcodeScanner, setIsShowBarcodeScanner] = useState(false);
+  const handleCodeV2 = () => {
     liff
       .scanCodeV2()
       .then((result) => {
         const { value } = result;
         console.log(value);
-        alert(value);
+        alert(result);
       })
       .catch((error) => {
         alert(error);
@@ -38,20 +50,34 @@ function App() {
     <section className='section'>
       <h1 className='title'>LINE LIFF 相機測試</h1>
 
-      <button
-        onClick={handleScan}
-        style={{
-          padding: '10px 20px',
-          fontSize: '16px',
-          backgroundColor: 'rgb(0, 150, 136)',
-          color: 'white',
-          border: 'none',
-          borderRadius: '5px',
-          cursor: 'pointer',
-        }}
-      >
-        LIFF 掃描
-      </button>
+      {!isShowBarcodeScanner && (
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button onClick={handleCodeV2} style={btnStyle}>
+            scanCodeV2
+          </button>
+
+          <button
+            onClick={() => setIsShowBarcodeScanner(true)}
+            style={btnStyle}
+          >
+            BarcodeScanner
+          </button>
+        </div>
+      )}
+
+      {isShowBarcodeScanner && (
+        <BarcodeScannerComponent
+          width={300}
+          height={300}
+          onUpdate={(err, result) => {
+            if (result) {
+              console.log(result);
+              alert(result);
+              setIsShowBarcodeScanner(false);
+            }
+          }}
+        />
+      )}
     </section>
   );
 }
