@@ -17,17 +17,27 @@ const btnStyle = {
 
 function App() {
   const [isShowBarcodeScanner, setIsShowBarcodeScanner] = useState(false);
+  const [data, setData] = useState(null);
+
   const handleCodeV2 = () => {
     liff
       .scanCodeV2()
       .then((result) => {
         const { value } = result;
         console.log(value);
-        alert(result);
+        setData(value);
       })
       .catch((error) => {
-        alert(error);
+        alert('掃描失敗');
       });
+  };
+
+  const handleBarcodeScanner = (err, result) => {
+    if (result) {
+      console.log(result);
+      setData(result);
+      setIsShowBarcodeScanner(false);
+    }
   };
 
   useEffect(() => {
@@ -66,17 +76,29 @@ function App() {
       )}
 
       {isShowBarcodeScanner && (
-        <BarcodeScannerComponent
-          width={300}
-          height={300}
-          onUpdate={(err, result) => {
-            if (result) {
-              console.log(result);
-              alert(result);
-              setIsShowBarcodeScanner(false);
-            }
-          }}
-        />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div className='camera__box'>
+            <span />
+            <span />
+            <span />
+            <span />
+            <BarcodeScannerComponent onUpdate={handleBarcodeScanner} />
+          </div>
+
+          <button
+            onClick={() => setIsShowBarcodeScanner(false)}
+            style={btnStyle}
+          >
+            取消
+          </button>
+        </div>
+      )}
+
+      {data && (
+        <div>
+          <h2>掃描結果</h2>
+          <p>{data}</p>
+        </div>
       )}
     </section>
   );

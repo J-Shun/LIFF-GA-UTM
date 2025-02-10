@@ -60,3 +60,77 @@
     color: #333333;
   }
 }
+
+.camera__box {
+  width: 260px;
+  height: 260px;
+  margin: 40px auto;
+  position: relative;
+  z-index: 0;
+  border-radius: 10px;
+
+  span {
+    position: absolute;
+    z-index: 1;
+    display: block;
+    width: 20px;
+    height: 6px;
+
+    &::before,
+    &::after {
+      position: absolute;
+      z-index: 2;
+      content: '';
+      width: 20px;
+      height: 6px;
+      border-radius: 20px;
+      background-color: rgb(0, 150, 136);
+    }
+    &::after {
+      transform: rotate(90deg);
+    }
+    &:first-of-type,
+    &:nth-of-type(2) {
+      top: 0;
+    }
+    &:last-of-type,
+    &:nth-of-type(3) {
+      bottom: 0;
+    }
+
+    &:nth-of-type(2),
+    &:nth-of-type(4) {
+      right: 0;
+    }
+
+    &:first-of-type {
+      &::after {
+        top: 7px;
+        left: -7px;
+      }
+    }
+    &:nth-of-type(3) {
+      &::after {
+        bottom: 7px;
+        left: -7px;
+      }
+    }
+    &:nth-of-type(2) {
+      &::after {
+        top: 7px;
+        right: -7px;
+      }
+    }
+    &:last-of-type {
+      &::after {
+        bottom: 7px;
+        right: -7px;
+      }
+    }
+  }
+  video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
