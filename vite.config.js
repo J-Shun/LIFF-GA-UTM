@@ -8,8 +8,8 @@ export default defineConfig({
   base: process.env.NODE_ENV === 'production' ? '/LIFF-GA-UTM/' : '/',
   server: {
     https: {
-      key: fs.readFileSync('./.cert/key.pem'),
-      cert: fs.readFileSync('./.cert/cert.pem'),
+      key: fs.readFileSync('./localhost-key.pem'),
+      cert: fs.readFileSync('./localhost.pem'),
     },
   },
   plugins: [react()],

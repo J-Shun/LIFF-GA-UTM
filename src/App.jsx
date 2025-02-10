@@ -1,54 +1,33 @@
 /* eslint-disable no-unused-vars */
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import liff from '@line/liff';
-import {
-  sendDataToGtm,
-  getSessionStorage,
-  saveUtm,
-  sendUtmToGtm,
-} from './helper';
 import config from './constant/config';
 import './App.css';
 
-const link = [
-  {
-    text: '前往 Migo 官網',
-    type: '_blank',
-  },
-];
-
 function App() {
-  const [utm, setUtm] = useState({});
+  const handleScan = () => {
+    liff
+      .scanCodeV2()
+      .then((result) => {
+        const { value } = result;
+        console.log(value);
+        alert(value);
+      })
+      .catch((error) => {
+        alert(error);
+      });
+  };
 
   useEffect(() => {
     const initLiff = async () => {
       try {
         await liff.init({ liffId: config.LIFF_ID });
-
-        saveUtm();
-
         // 若無登入，則跳制登入頁面
         if (!liff.isLoggedIn()) {
           liff.login();
           return;
         }
-
-        const profile = await liff.getProfile();
-        const lineUid = profile.userId;
-
-        // 配合 GTM 那邊做的特殊設置
-        sendDataToGtm({ event: 'setLineUid', key: 'lineUid', value: lineUid });
-        sendDataToGtm({
-          event: 'setGaTrackingId',
-          key: 'gaTrackingId',
-          value: config.GA4_TRACKING_ID,
-        });
-        sendUtmToGtm();
-        const utmString = getSessionStorage('utm');
-        const parsedUtm = JSON.parse(utmString);
-        setUtm(parsedUtm);
       } catch (error) {
-        alert('error');
         console.log(error);
       }
     };
@@ -57,33 +36,22 @@ function App() {
 
   return (
     <section className='section'>
-      <h1 className='title'>GA & UTM</h1>
+      <h1 className='title'>LINE LIFF 相機測試</h1>
 
-      <ul className='utm-list'>
-        <li>utm_source: {utm?.utm_source}</li>
-        <li>utm_medium: {utm?.utm_medium}</li>
-        <li>utm_campaign: {utm?.utm_campaign}</li>
-        <li>utm_term: {utm?.utm_term}</li>
-        <li>utm_content: {utm?.utm_content}</li>
-        <li>third_party: {utm?.third_party}</li>
-        <li>third_party_id: {utm?.third_party_id}</li>
-        <li>device_id: {utm?.device_id}</li>
-      </ul>
-
-      <button className='btn btn-test' data-ga-id='button-test'>
-        GA Event Test
+      <button
+        onClick={handleScan}
+        style={{
+          padding: '10px 20px',
+          fontSize: '16px',
+          backgroundColor: 'rgb(0, 150, 136)',
+          color: 'white',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer',
+        }}
+      >
+        LIFF 掃描
       </button>
-
-      {link.map((item) => (
-        <a
-          href='https://www.migocorp.com/'
-          className='link'
-          target={item.type}
-          key={item.type}
-        >
-          {item.text}
-        </a>
-      ))}
     </section>
   );
 }
