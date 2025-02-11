@@ -62,8 +62,8 @@
 }
 
 .camera__box {
-  width: 260px;
-  height: 260px;
+  width: 200px;
+  height: 200px;
   margin: 40px auto;
   position: relative;
   z-index: 0;
