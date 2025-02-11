@@ -4,6 +4,7 @@ import liff from '@line/liff';
 import config from './constant/config';
 import './App.css';
 import BarcodeScannerComponent from 'react-qr-barcode-scanner';
+import { Scanner } from '@yudiel/react-qr-scanner';
 
 const btnStyle = {
   padding: '10px 20px',
@@ -17,6 +18,7 @@ const btnStyle = {
 
 function App() {
   const [isShowBarcodeScanner, setIsShowBarcodeScanner] = useState(false);
+  const [isShowVideo, setIsShowVideo] = useState(false);
   const [data, setData] = useState(null);
 
   const handleCodeV2 = () => {
@@ -38,6 +40,19 @@ function App() {
       setData(result);
       setIsShowBarcodeScanner(false);
     }
+  };
+
+  const handleVideo = (result) => {
+    console.log(result);
+    if (!result) return;
+
+    const invoiceRegex = /^[A-Z]{2}\d{8}.*$/;
+    const isInvoice = invoiceRegex.test(result[0].rawValue);
+
+    if (!isInvoice) return;
+
+    setData(result[0].rawValue);
+    setIsShowVideo(false);
   };
 
   useEffect(() => {
@@ -72,6 +87,10 @@ function App() {
           >
             BarcodeScanner
           </button>
+
+          <button onClick={() => setIsShowVideo(true)} style={btnStyle}>
+            自製
+          </button>
         </div>
       )}
 
@@ -89,6 +108,18 @@ function App() {
             onClick={() => setIsShowBarcodeScanner(false)}
             style={btnStyle}
           >
+            取消
+          </button>
+        </div>
+      )}
+
+      {isShowVideo && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div className='camera__box'>
+            <Scanner onScan={handleVideo} />
+          </div>
+
+          <button onClick={() => setIsShowVideo(false)} style={btnStyle}>
             取消
           </button>
         </div>
