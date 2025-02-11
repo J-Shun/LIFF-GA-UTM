@@ -231,28 +231,27 @@ function App() {
             <Scanner
               onScan={handleVideo}
               formats={[
+                'qr_code',
+                'micro_qr_code',
+                'rm_qr_code',
+                'maxi_code',
+                'pdf417',
+                'aztec',
+                'data_matrix',
+                'matrix_codes',
+                'dx_film_edge',
+                'databar',
+                'databar_expanded',
                 'codabar',
-                // 'qr_code',
-                // 'micro_qr_code',
-                // 'rm_qr_code',
-                // 'maxi_code',
-                // 'pdf417',
-                // 'aztec',
-                // 'data_matrix',
-                // 'matrix_codes',
-                // 'dx_film_edge',
-                // 'databar',
-                // 'databar_expanded',
-                // 'codabar',
-                // 'code_39',
-                // 'code_93',
-                // 'code_128',
-                // 'ean_8',
-                // 'ean_13',
-                // 'itf',
-                // 'linear_codes',
-                // 'upc_a',
-                // 'upc_e',
+                'code_39',
+                'code_93',
+                'code_128',
+                'ean_8',
+                'ean_13',
+                'itf',
+                'linear_codes',
+                'upc_a',
+                'upc_e',
               ]}
               onError={(error) => {
                 console.log(`onError: ${error}'`);
@@ -265,8 +264,9 @@ function App() {
                 finder: true,
                 tracker: centerText,
               }}
+              ViewFinder='outline'
               allowMultiple={true}
-              scanDelay={2000}
+              scanDelay={300}
             />
           </div>
 
