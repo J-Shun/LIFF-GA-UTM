@@ -144,7 +144,7 @@ function App() {
               components={{
                 audio: false,
                 //   onOff: true,
-                //   torch: true,
+                torch: false,
                 //   zoom: true,
                 //   finder: true,
                 tracker: boundingBox,
