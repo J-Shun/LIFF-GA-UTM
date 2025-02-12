@@ -16,116 +16,16 @@ const btnStyle = {
   cursor: 'pointer',
 };
 
-function centerText(detectedCodes, ctx) {
-  detectedCodes.forEach((detectedCode) => {
-    const { boundingBox, rawValue } = detectedCode;
-    const centerX = boundingBox.x + boundingBox.width / 2;
-    const centerY = boundingBox.y + boundingBox.height / 2;
-    const fontSize = Math.max(12, (50 * boundingBox.width) / ctx.canvas.width);
-    const lineHeight = fontSize;
+function boundingBox(detectedCodes, ctx) {
+  for (const detectedCode of detectedCodes) {
+    const {
+      boundingBox: { x, y, width, height },
+    } = detectedCode;
 
-    ctx.font = `${fontSize}px sans-serif`;
-    ctx.textAlign = 'left';
-
-    let formattedText;
-    try {
-      formattedText = JSON.stringify(JSON.parse(rawValue), null, 2);
-    } catch {
-      formattedText = rawValue;
-    }
-
-    const lines = formattedText.split('\n');
-    const textWidth = Math.max(
-      ...lines.map((line) => ctx.measureText(line).width)
-    );
-    const textHeight = lines.length * lineHeight;
-    const padding = 10;
-    const rectX = centerX - textWidth / 2 - padding;
-    const rectY = centerY - textHeight / 2 - padding;
-    const rectWidth = textWidth + padding * 2;
-    const rectHeight = textHeight + padding;
-    const radius = 8;
-
-    ctx.beginPath();
-    ctx.moveTo(rectX + radius, rectY);
-    ctx.lineTo(rectX + rectWidth - radius, rectY);
-    ctx.quadraticCurveTo(
-      rectX + rectWidth,
-      rectY,
-      rectX + rectWidth,
-      rectY + radius
-    );
-    ctx.lineTo(rectX + rectWidth, rectY + rectHeight - radius);
-    ctx.quadraticCurveTo(
-      rectX + rectWidth,
-      rectY + rectHeight,
-      rectX + rectWidth - radius,
-      rectY + rectHeight
-    );
-    ctx.lineTo(rectX + radius, rectY + rectHeight);
-    ctx.quadraticCurveTo(
-      rectX,
-      rectY + rectHeight,
-      rectX,
-      rectY + rectHeight - radius
-    );
-    ctx.lineTo(rectX, rectY + radius);
-    ctx.quadraticCurveTo(rectX, rectY, rectX + radius, rectY);
-    ctx.closePath();
-    ctx.fillStyle = 'rgba(255, 255, 0, 0.9)';
-    ctx.fill();
-
-    lines.forEach((line, index) => {
-      const y =
-        centerY + index * lineHeight - ((lines.length - 1) * lineHeight) / 2;
-      let currentX = centerX - textWidth / 2;
-      let lastIndex = 0;
-
-      const propertyMatches = [...line.matchAll(/"([^"]+)":/g)];
-      const valueMatches = [
-        ...line.matchAll(/:\s*("[^"]*"|\d+|true|false|null)/g),
-      ];
-
-      propertyMatches.forEach((match, matchIndex) => {
-        const property = match[0].replace(':', '');
-        const beforeProperty = line.substring(lastIndex, match.index);
-
-        ctx.fillStyle = 'black';
-        ctx.fillText(beforeProperty, currentX, y);
-        currentX += ctx.measureText(beforeProperty).width;
-
-        ctx.fillStyle = 'blue';
-        ctx.fillText(property, currentX, y);
-        currentX += ctx.measureText(property).width;
-
-        lastIndex = match.index + property.length;
-
-        ctx.fillStyle = 'black';
-        ctx.fillText(': ', currentX, y);
-        currentX += ctx.measureText(': ').width;
-
-        if (matchIndex < valueMatches.length) {
-          const valueMatch = valueMatches[matchIndex];
-          const beforeValue = line.substring(lastIndex, valueMatch.index);
-
-          ctx.fillStyle = 'black';
-          ctx.fillText(beforeValue, currentX, y);
-          currentX += ctx.measureText(beforeValue).width;
-
-          const value = valueMatch[0].match(/:\s*(.*)/)?.[1] ?? '';
-          ctx.fillStyle = 'green';
-          ctx.fillText(value, currentX, y);
-          currentX += ctx.measureText(value).width;
-
-          lastIndex = valueMatch.index + valueMatch[0].length;
-        }
-      });
-
-      ctx.fillStyle = 'black';
-      const remainingLine = line.substring(lastIndex);
-      ctx.fillText(remainingLine, currentX, y);
-    });
-  });
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'yellow';
+    ctx.strokeRect(x, y, width, height);
+  }
 }
 
 function App() {
@@ -146,14 +46,6 @@ function App() {
       });
   };
 
-  const handleBarcodeScanner = (err, result) => {
-    if (result) {
-      console.log(result);
-      setData(result);
-      setIsShowBarcodeScanner(false);
-    }
-  };
-
   const handleVideo = (result) => {
     console.log(result);
     if (!result) return;
@@ -163,8 +55,8 @@ function App() {
 
     if (!isInvoice) return;
 
-    setData(result[0].rawValue);
-    setIsShowVideo(false);
+    const invoiceNumber = result[0].rawValue.substring(0, 10);
+    setData(invoiceNumber);
   };
 
   useEffect(() => {
@@ -189,24 +81,17 @@ function App() {
 
       {!isShowBarcodeScanner && (
         <div style={{ display: 'flex', gap: '10px' }}>
-          <button onClick={handleCodeV2} style={btnStyle}>
+          {/* <button onClick={handleCodeV2} style={btnStyle}>
             scanCodeV2
-          </button>
-
-          <button
-            onClick={() => setIsShowBarcodeScanner(true)}
-            style={btnStyle}
-          >
-            BarcodeScanner
-          </button>
+          </button> */}
 
           <button onClick={() => setIsShowVideo(true)} style={btnStyle}>
-            自製
+            開啟相機
           </button>
         </div>
       )}
 
-      {isShowBarcodeScanner && (
+      {/* {isShowBarcodeScanner && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <div className='camera__box'>
             <span />
@@ -223,7 +108,7 @@ function App() {
             取消
           </button>
         </div>
-      )}
+      )} */}
 
       {isShowVideo && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -257,29 +142,28 @@ function App() {
                 console.log(`onError: ${error}'`);
               }}
               components={{
-                audio: true,
-                onOff: true,
-                torch: true,
-                zoom: true,
-                finder: true,
-                tracker: centerText,
+                audio: false,
+                //   onOff: true,
+                //   torch: true,
+                //   zoom: true,
+                //   finder: true,
+                tracker: boundingBox,
               }}
-              ViewFinder='outline'
               allowMultiple={true}
               scanDelay={300}
             />
           </div>
 
+          {data && (
+            <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+              <h2>掃描結果</h2>
+              <p>{data}</p>
+            </div>
+          )}
+
           <button onClick={() => setIsShowVideo(false)} style={btnStyle}>
             取消
           </button>
-        </div>
-      )}
-
-      {data && (
-        <div>
-          <h2>掃描結果</h2>
-          <p>{data}</p>
         </div>
       )}
     </section>
