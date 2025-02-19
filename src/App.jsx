@@ -78,7 +78,7 @@ function App() {
   }, []);
 
   return (
-    <section className='section'>
+    <section className='section scanner-container'>
       <h1 className='title'>LINE LIFF 相機測試</h1>
 
       {!isShowBarcodeScanner && (
