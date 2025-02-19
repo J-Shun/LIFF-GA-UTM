@@ -32,6 +32,7 @@ function App() {
   const [isShowBarcodeScanner, setIsShowBarcodeScanner] = useState(false);
   const [isShowVideo, setIsShowVideo] = useState(false);
   const [data, setData] = useState(null);
+  const [isCameraStop, setIsCameraStop] = useState(false);
 
   const handleCodeV2 = () => {
     liff
@@ -57,6 +58,7 @@ function App() {
 
     const invoiceNumber = result[0].rawValue.substring(0, 10);
     setData(invoiceNumber);
+    setIsCameraStop(true);
   };
 
   useEffect(() => {
@@ -129,6 +131,7 @@ function App() {
               }}
               allowMultiple={true}
               scanDelay={300}
+              paused={isCameraStop}
             />
           </div>
 
@@ -139,7 +142,13 @@ function App() {
             </div>
           )}
 
-          <button onClick={() => setIsShowVideo(false)} style={btnStyle}>
+          <button
+            onClick={() => {
+              setIsShowVideo(false);
+              setIsCameraStop(false);
+            }}
+            style={btnStyle}
+          >
             取消
           </button>
         </div>
