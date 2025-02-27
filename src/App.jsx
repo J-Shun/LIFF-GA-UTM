@@ -47,7 +47,7 @@ function App() {
 
         if (code) {
           setQrCodeData(code.data);
-          console.log('QR Code Data:', code.data);
+          alert('QR Code Data:', code.data);
 
           // clearInterval(intervalId); // 停止掃描
         }
@@ -78,10 +78,10 @@ function App() {
       <h1 className='title'>LINE LIFF 相機測試</h1>
 
       <button type='button' onClick={handleOpenCamera} style={btnStyle}>
-        開啟相機
+        開啟手工相機
       </button>
 
-      <video ref={videoRef} autoPlay={true} />
+      <video ref={videoRef} autoPlay={true} width={300} height={300} />
       <canvas ref={canvasRef} style={{ display: 'none' }} />
       {qrCodeData && <p>QR Code Data: {qrCodeData}</p>}
     </section>
