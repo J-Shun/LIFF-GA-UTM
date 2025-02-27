@@ -78,10 +78,10 @@ function App() {
       <h1 className='title'>LINE LIFF 相機測試</h1>
 
       <button type='button' onClick={handleOpenCamera} style={btnStyle}>
-        開啟手工相機
+        開啟手工相機（非滿版）
       </button>
 
-      <video ref={videoRef} autoPlay={true} width={300} height={300} />
+      <video ref={videoRef} autoPlay={true} playsInline />
       <canvas ref={canvasRef} style={{ display: 'none' }} />
       {qrCodeData && <p>QR Code Data: {qrCodeData}</p>}
     </section>
