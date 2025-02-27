@@ -1,64 +1,58 @@
 /* eslint-disable no-unused-vars */
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import jsQR from 'jsqr';
 import liff from '@line/liff';
 import config from './constant/config';
 import './App.css';
-import BarcodeScannerComponent from 'react-qr-barcode-scanner';
-import { Scanner } from '@yudiel/react-qr-scanner';
 
 const btnStyle = {
   padding: '10px 20px',
   fontSize: '16px',
   backgroundColor: 'rgb(0, 150, 136)',
+  marginBottom: '20px',
   color: 'white',
   border: 'none',
   borderRadius: '5px',
   cursor: 'pointer',
 };
 
-function boundingBox(detectedCodes, ctx) {
-  for (const detectedCode of detectedCodes) {
-    const {
-      boundingBox: { x, y, width, height },
-    } = detectedCode;
-
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = 'yellow';
-    ctx.strokeRect(x, y, width, height);
-  }
-}
-
 function App() {
-  const [isShowBarcodeScanner, setIsShowBarcodeScanner] = useState(false);
-  const [isShowVideo, setIsShowVideo] = useState(false);
-  const [data, setData] = useState(null);
-  const [isCameraStop, setIsCameraStop] = useState(false);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const [qrCodeData, setQrCodeData] = useState(null);
 
-  const handleCodeV2 = () => {
-    liff
-      .scanCodeV2()
-      .then((result) => {
-        const { value } = result;
-        console.log(value);
-        setData(value);
-      })
-      .catch((error) => {
-        alert('掃描失敗');
+  const handleOpenCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: false,
       });
-  };
 
-  const handleVideo = (result) => {
-    console.log(result);
-    if (!result) return;
+      const video = videoRef.current;
+      video.srcObject = stream;
+      video.play();
 
-    const invoiceRegex = /^[A-Z]{2}\d{8}.*$/;
-    const isInvoice = invoiceRegex.test(result[0].rawValue);
+      // 進行即時 QR 碼掃描
+      const intervalId = setInterval(() => {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0);
 
-    if (!isInvoice) return;
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height);
 
-    const invoiceNumber = result[0].rawValue.substring(0, 10);
-    setData(invoiceNumber);
-    setIsCameraStop(true);
+        if (code) {
+          setQrCodeData(code.data);
+          console.log('QR Code Data:', code.data);
+
+          // clearInterval(intervalId); // 停止掃描
+        }
+      }, 100); // 每 100 毫秒掃描一次
+    } catch (error) {
+      console.error('Error opening camera:', error);
+    }
   };
 
   useEffect(() => {
@@ -81,78 +75,13 @@ function App() {
     <section className='section scanner-container'>
       <h1 className='title'>LINE LIFF 相機測試</h1>
 
-      {!isShowBarcodeScanner && (
-        <div style={{ display: 'flex', gap: '10px' }}>
-          {/* <button onClick={handleCodeV2} style={btnStyle}>
-            scanCodeV2
-          </button> */}
+      <button type='button' onClick={handleOpenCamera} style={btnStyle}>
+        開啟相機
+      </button>
 
-          <button onClick={() => setIsShowVideo(true)} style={btnStyle}>
-            開啟相機
-          </button>
-        </div>
-      )}
-
-      {/* {isShowBarcodeScanner && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <div className='camera__box'>
-            <span />
-            <span />
-            <span />
-            <span />
-            <BarcodeScannerComponent onUpdate={handleBarcodeScanner} />
-          </div>
-
-          <button
-            onClick={() => setIsShowBarcodeScanner(false)}
-            style={btnStyle}
-          >
-            取消
-          </button>
-        </div>
-      )} */}
-
-      {isShowVideo && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <div className='camera__box'>
-            <Scanner
-              onScan={handleVideo}
-              formats={['qr_code', 'micro_qr_code']}
-              onError={(error) => {
-                console.log(`onError: ${error}'`);
-              }}
-              components={{
-                audio: false,
-                //   onOff: true,
-                torch: false,
-                //   zoom: true,
-                //   finder: true,
-                tracker: boundingBox,
-              }}
-              allowMultiple={true}
-              scanDelay={300}
-              paused={isCameraStop}
-            />
-          </div>
-
-          {data && (
-            <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-              <h2>掃描結果</h2>
-              <p>{data}</p>
-            </div>
-          )}
-
-          <button
-            onClick={() => {
-              setIsShowVideo(false);
-              setIsCameraStop(false);
-            }}
-            style={btnStyle}
-          >
-            取消
-          </button>
-        </div>
-      )}
+      <video ref={videoRef} autoPlay={true} />
+      <canvas ref={canvasRef} style={{ display: 'none' }} />
+      {qrCodeData && <p>QR Code Data: {qrCodeData}</p>}
     </section>
   );
 }
